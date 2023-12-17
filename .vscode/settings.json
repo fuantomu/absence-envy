@@ -1,0 +1,27 @@
+{
+    "eslint.options": {
+        "configFile": "./.eslintrc.json"
+    },
+    "cSpell.words": [
+      "datepicker",
+      "Evoker"
+    ],
+    "javascript.preferences.importModuleSpecifierEnding": "js",
+    "[typescript]": {
+        "editor.codeActionsOnSave": {
+          "source.organizeImports": "explicit",
+          "source.fixAll": "explicit"
+        }
+    },
+    "files.eol": "\r\n",
+    "prettier.endOfLine": "crlf",
+    "editor.formatOnSave": true,
+    "editor.detectIndentation": false,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "files.trimFinalNewlines": true,
+    "java.configuration.updateBuildConfiguration": "interactive"
+}
