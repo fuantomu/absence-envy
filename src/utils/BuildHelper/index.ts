@@ -1,12 +1,11 @@
-import { BuildPlayer, ConnectionString } from "../../types";
+import { BuildPlayer } from "../../types";
 import { RosterProvider } from "../RosterProvider";
 
 export abstract class BuildHelper {
-  public static async parseSqlImport(connectionString: ConnectionString) {
+  public static async parseSqlImport() {
     const players: BuildPlayer[] = [];
-    connectionString.table = process.env.REACT_APP_SQL_TABLE
 
-    await RosterProvider.getRosterRaidPlayers(JSON.stringify(connectionString)).then((roster) =>{
+    await RosterProvider.getRosterRaidPlayers().then((roster) =>{
       try {
         for (const player of roster) {
           players.push({
@@ -30,13 +29,15 @@ export abstract class BuildHelper {
     return players;
   }
 
-  public static async parseAbsenceSend(connectionString: ConnectionString, name: string, startDate: number, endDate: number, reason: string) {
-    connectionString.table = "AbsenceEntity"
-    connectionString.name = name
-    connectionString.startDate = startDate
-    connectionString.endDate = endDate
-    connectionString.reason = reason
+  public static async parseAbsenceSend(name: string, startDate: number, endDate: number, reason: string) {
+    const absence = { absence:{
+      name,
+      startDate,
+      endDate,
+      reason
+    }
+    }
 
-    await RosterProvider.sendAbsence(JSON.stringify(connectionString))
+    await RosterProvider.sendAbsence(JSON.stringify(absence))
   }
 }

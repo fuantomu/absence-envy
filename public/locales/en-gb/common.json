@@ -8,5 +8,13 @@
     "apiCancelled": "Internal Error",
     "api403": "403: Forbidden",
     "api404": "404: Not Found"
+  },
+  "absence": {
+    "title": "Create absence",
+    "character": "Main Character",
+    "start": "Start date",
+    "end": "End date",
+    "reason": "Absence reason",
+    "send": "Send absence"
   }
 }

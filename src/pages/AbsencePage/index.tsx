@@ -25,18 +25,10 @@ const AbsencePage: FC<AbsencePageProps> = () => {
   const [endDate, setEndDate] = useState(new Date());
   const [reason, setReason] = useState('');
   const handleError = useErrorHandler();
-  const CONNECTION_STRING = {
-    "server": process.env.REACT_APP_SQL_HOST,
-    "port": '3306',
-    "database": process.env.REACT_APP_SQL_DATABASE,
-    "uid": process.env.REACT_APP_SQL_USER,
-    "password": process.env.REACT_APP_SQL_PASSWORD,
-    "table": process.env.REACT_APP_SQL_TABLE
-  };
 
   const getOptions = async () => {
     const buildObject : any[] = [];
-    await BuildHelper.parseSqlImport(CONNECTION_STRING).then((newRoster : BuildPlayer[]) => {
+    await BuildHelper.parseSqlImport().then((newRoster : BuildPlayer[]) => {
       if(newRoster){
         for(const player of newRoster){
           if(player.main === player.name){
@@ -60,7 +52,7 @@ const AbsencePage: FC<AbsencePageProps> = () => {
   const handleSend = () => {
     if(selectedOption !== "DEFAULT"){
       console.log(`Player ${selectedOption} is absent from ${startDate} to ${endDate} with reason ${reason}`)
-      BuildHelper.parseAbsenceSend(CONNECTION_STRING, selectedOption, startDate.getTime(), endDate.getTime(), reason)
+      BuildHelper.parseAbsenceSend(selectedOption, startDate.getTime(), endDate.getTime(), reason)
     }
   }
 
@@ -98,7 +90,7 @@ const AbsencePage: FC<AbsencePageProps> = () => {
               >
                 <MenuItem disabled key={"DEFAULT"} value={"DEFAULT"}>Select a character...</MenuItem>
                 {options.map((option) => (
-                    <MenuItem key={option} value={option}> {option} </MenuItem>
+                    <MenuItem key={UUID()} value={option}> {option} </MenuItem>
                 ))}
               </Select>
           </Box>
