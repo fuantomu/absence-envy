@@ -28,7 +28,7 @@ const AbsencePage: FC<AbsencePageProps> = () => {
 
   const getOptions = async () => {
     const buildObject : any[] = [];
-    await BuildHelper.parseSqlImport().then((newRoster : BuildPlayer[]) => {
+    await BuildHelper.parseGetPlayers().then((newRoster : BuildPlayer[]) => {
       if(newRoster){
         for(const player of newRoster){
           if(player.main === player.name){

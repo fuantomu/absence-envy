@@ -2,10 +2,10 @@ import { BuildPlayer } from "../../types";
 import { RosterProvider } from "../RosterProvider";
 
 export abstract class BuildHelper {
-  public static async parseSqlImport() {
+  public static async parseGetPlayers() {
     const players: BuildPlayer[] = [];
 
-    await RosterProvider.getRosterRaidPlayers().then((roster) =>{
+    await RosterProvider.getPlayers().then((roster) =>{
       try {
         for (const player of roster) {
           players.push({
