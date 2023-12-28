@@ -13,4 +13,8 @@ export abstract class RosterProvider {
       console.log(response)
     })
   }
+
+  public static async postAbsence(build: string) : Promise<Response>{
+    return await fetch(`${process.env.REACT_APP_DISCORD_WEBHOOK}`, {method: "POST", mode:"cors",credentials:"include", headers: {"Content-Type": "application/json"}, body: build}).then((response) => {return response})
+  }
 }

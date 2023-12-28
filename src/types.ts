@@ -37,3 +37,10 @@ export type SelectOption = {
   value: string;
   label: string;
 };
+
+export type Absence = {
+  name : string,
+  startDate : number,
+  endDate : number,
+  reason : string
+}

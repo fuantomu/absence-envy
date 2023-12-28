@@ -52,7 +52,9 @@ const AbsencePage: FC<AbsencePageProps> = () => {
   const handleSend = () => {
     if(selectedOption !== "DEFAULT"){
       console.log(`Player ${selectedOption} is absent from ${startDate} to ${endDate} with reason ${reason}`)
-      BuildHelper.parseAbsenceSend(selectedOption, startDate.getTime(), endDate.getTime(), reason)
+      const absence = {name:selectedOption, startDate: startDate.getTime(), endDate: endDate.getTime(), reason}
+      BuildHelper.parseAbsenceSend(absence)
+      BuildHelper.parsePostAbsence(absence)
     }
   }
 
