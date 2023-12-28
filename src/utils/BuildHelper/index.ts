@@ -30,7 +30,7 @@ export abstract class BuildHelper {
   }
 
   public static async parseAbsenceSend(absence: Absence) {
-    await RosterProvider.sendAbsence(JSON.stringify(absence))
+    await RosterProvider.sendAbsence(JSON.stringify({absence: absence}))
   }
 
   public static async parsePostAbsence(absence : Absence) {
@@ -38,7 +38,7 @@ export abstract class BuildHelper {
       "content": "",
       "embeds": [{
         "description": "",
-        "title": "Neue Abmeldung erhalten",
+        "title": "Neue Abwesenheit erhalten",
         "color": null,
         "fields": [
           {
