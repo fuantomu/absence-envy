@@ -15,6 +15,7 @@
     "start": "Start date",
     "end": "End date",
     "reason": "Absence reason",
-    "send": "Send absence"
+    "send": "Send absence",
+    "sent": "Absence sent!"
   }
 }

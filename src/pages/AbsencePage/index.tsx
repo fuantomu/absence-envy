@@ -24,6 +24,7 @@ const AbsencePage: FC<AbsencePageProps> = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [reason, setReason] = useState('');
+  const [sent, setSent] = useState(false);
   const handleError = useErrorHandler();
 
   const getOptions = async () => {
@@ -55,6 +56,7 @@ const AbsencePage: FC<AbsencePageProps> = () => {
       const absence = {name:selectedOption, startDate: startDate.getTime(), endDate: endDate.getTime(), reason}
       BuildHelper.parseAbsenceSend(absence)
       BuildHelper.parsePostAbsence(absence)
+      setSent(true)
     }
   }
 
@@ -67,6 +69,17 @@ const AbsencePage: FC<AbsencePageProps> = () => {
 
   if (isLoading) {
     return <Loading />;
+  }
+
+  if (sent){
+    return (<Container key={UUID()}>
+              <Box key={UUID()} display={"flex"} css={{justifyContent:"center"}}>
+                <Typography style={{caretColor: "transparent"}} fontSize={"38px"} variant="subtitle1">
+                {common(`absence.sent`)}
+                </Typography>
+              </Box>
+            </Container>
+    )
   }
 
   return (
