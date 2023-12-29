@@ -36,7 +36,7 @@ const AbsencePage: FC<AbsencePageProps> = () => {
             buildObject.push(player.name)
           }
         }
-        setOptions(buildObject)
+        setOptions(buildObject.sort((a,b) => a.localeCompare(b)))
       }
     })
     return buildObject
