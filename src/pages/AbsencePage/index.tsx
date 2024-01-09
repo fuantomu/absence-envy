@@ -67,7 +67,7 @@ const AbsencePage: FC<AbsencePageProps> = () => {
       getOptions()
       setIsLoading(false);
     }
-  }, [handleError, options, reason]);
+  }, [handleError, isLoading, options, reason]);
 
   if (isLoading) {
     return <Loading />;
