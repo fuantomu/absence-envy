@@ -25,6 +25,7 @@ const AbsencePage: FC<AbsencePageProps> = () => {
   const [endDate, setEndDate] = useState(new Date());
   const [reason, setReason] = useState('');
   const [sent, setSent] = useState(false);
+  const [error, showError] = useState(false);
   const handleError = useErrorHandler();
 
   const getOptions = async () => {
@@ -47,10 +48,17 @@ const AbsencePage: FC<AbsencePageProps> = () => {
   }
 
   const handleInput = (text: string) => {
+    if(error){
+      showError(false)
+    }
     setReason(text)
   }
 
   const handleSend = () => {
+    if(reason.length === 0){
+      showError(true)
+      return
+    }
     if(selectedOption !== "DEFAULT"){
       const newStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0, 0, 0, 0)
       const newEnd = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59, 999)
@@ -60,6 +68,14 @@ const AbsencePage: FC<AbsencePageProps> = () => {
       BuildHelper.parsePostAbsence(absence)
       setSent(true)
     }
+  }
+
+  const handleGoBack = () => {
+    setSelectedOption("DEFAULT")
+    setStartDate(new Date())
+    setEndDate(new Date())
+    setReason("")
+    setSent(false)
   }
 
   useEffect(() => {
@@ -75,10 +91,17 @@ const AbsencePage: FC<AbsencePageProps> = () => {
 
   if (sent){
     return (<Container key={UUID()}>
-              <Box key={UUID()} display={"flex"} css={{justifyContent:"center"}}>
+              <Box key={UUID()} display={"flex"} css={{justifyContent:"center", marginTop: "10%"}}>
                 <Typography style={{caretColor: "transparent"}} fontSize={"38px"} variant="subtitle1">
                 {common(`absence.sent`)}
                 </Typography>
+              </Box>
+              <Box display={"flex"} css={{marginTop: "80%", justifyContent:"center"}}>
+                <Button color="primary" variant="contained" css={{width:"300px", height:"120px"}} onClick={handleGoBack}>
+                  <Typography style={{caretColor: "transparent"}} fontSize={"38px"} variant="subtitle1">
+                   {"Back"}
+                  </Typography>
+                </Button>
               </Box>
             </Container>
     )
@@ -137,6 +160,9 @@ const AbsencePage: FC<AbsencePageProps> = () => {
                 placeholder={common("absence.reason")}
                 autoFocus
               />
+          {error? <Typography style={{caretColor: "transparent", color: "red"}} fontSize={"22px"} variant="subtitle1">
+                {common(`absence.error`)}
+              </Typography> : <></>}
 
           </Box>
           <br></br>
