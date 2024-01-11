@@ -16,6 +16,7 @@
     "end": "End date",
     "reason": "Absence reason",
     "send": "Send absence",
-    "sent": "Absence sent!"
+    "sent": "Absence sent!",
+    "error": "Reason has to be filled!"
   }
 }
