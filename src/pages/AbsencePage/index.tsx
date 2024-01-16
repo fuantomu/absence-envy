@@ -1,32 +1,36 @@
 /** @jsxImportSource @emotion/react */
 import Container from "@mui/material/Container";
-import { FC, ReactNode, useEffect, useState } from "react";
+import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { TextInput } from 'react-native';
 import { AppContextProvider } from "../../components/App/context";
 import Loading from "../../components/Loading";
 import { BuildHelper } from "../../utils/BuildHelper";
 import useErrorHandler from "../../utils/useErrorHandler";
 import { BuildPlayer } from "../../types";
-import { Box, Button, Card, CardContent, MenuItem, Select, SelectChangeEvent, Tooltip, Typography } from "@mui/material";
-import DatePicker from "react-datepicker";
+import { Box, Button, MenuItem, Select, SelectChangeEvent, Tooltip, Typography } from "@mui/material";
 import UUID from "../../utils/UUID";
 import SendIcon from '@mui/icons-material/Send';
-import "react-datepicker/dist/react-datepicker.css";
+import Logo from "../Logo";
+import useStyles from "./useStyles";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs, { Dayjs } from 'dayjs';
+import ReasonText from "../ReasonText";
 
 export interface AbsencePageProps {}
 
 const AbsencePage: FC<AbsencePageProps> = () => {
   const [common] = useTranslation("common");
+  const styles = useStyles();
   const [isLoading, setIsLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState("DEFAULT");
   const [options, setOptions] = useState<any[]>([]);
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-  const [reason, setReason] = useState('');
+  const [startDate, setStartDate] = useState<Dayjs>(dayjs().set("hours",0).set("minutes", 0).set("seconds", 0).set("milliseconds",0));
+  const [endDate, setEndDate] = useState<Dayjs>(dayjs().set("hours",0).set("minutes", 0).set("seconds", 0).set("milliseconds",0));
   const [sent, setSent] = useState(false);
-  const [error, showError] = useState(false);
+  const [characterError, setCharacterError] = useState(false);
   const handleError = useErrorHandler();
+  const reasonRef = useRef<any>()
 
   const getOptions = async () => {
     const buildObject : any[] = [];
@@ -45,37 +49,51 @@ const AbsencePage: FC<AbsencePageProps> = () => {
 
   const handleSelect = (event: SelectChangeEvent<string>, child: ReactNode) => {
     setSelectedOption(event.target.value)
-  }
-
-  const handleInput = (text: string) => {
-    if(error){
-      showError(false)
-    }
-    setReason(text)
+    setCharacterError(false)
   }
 
   const handleSend = () => {
-    if(reason.length === 0){
-      showError(true)
+    if(selectedOption === "DEFAULT"){
+      setCharacterError(true)
       return
     }
-    if(selectedOption !== "DEFAULT"){
-      const newStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0, 0, 0, 0)
-      const newEnd = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59, 999)
-      console.log(`Player ${selectedOption} is absent from ${newStart} to ${newEnd} with reason ${reason}`)
-      const absence = {name:selectedOption, startDate: newStart.getTime(), endDate: newEnd.getTime(), reason}
-      BuildHelper.parseAbsenceSend(absence)
-      BuildHelper.parsePostAbsence(absence)
-      setSent(true)
-    }
+
+    const newStart = startDate.set("hours",0).set("minutes",0).set("seconds",0).set("milliseconds",0)
+    const newEnd = endDate.set("hours",23).set("minutes",59).set("seconds",59).set("milliseconds",999)
+    console.log(`Player ${selectedOption} is absent from ${newStart} to ${newEnd} with reason ${reasonRef.current?.value?? ""}`)
+    const absence = {name:selectedOption, startDate: newStart.unix()*1000, endDate: newEnd.unix()*1000, reason: reasonRef.current?.value?? ""}
+    BuildHelper.parseAbsenceSend(absence)
+    BuildHelper.parsePostAbsence(absence)
+    setSent(true)
   }
 
   const handleGoBack = () => {
     setSelectedOption("DEFAULT")
-    setStartDate(new Date())
-    setEndDate(new Date())
-    setReason("")
+    setStartDate(dayjs().set("hours",0).set("minutes", 0).set("seconds", 0).set("milliseconds",0))
+    setEndDate(dayjs().set("hours",0).set("minutes", 0).set("seconds", 0).set("milliseconds",0))
     setSent(false)
+  }
+
+  const handleStartDateChange = (date: Dayjs | null) => {
+    if(date === null){
+      date = dayjs().set("hours",0).set("minutes", 0).set("seconds", 0).set("milliseconds",0)
+    }
+    const newDate = date.set("hours",0).set("minutes", 0).set("seconds", 0).set("milliseconds",0)
+    setStartDate(newDate)
+    if(newDate.isAfter(endDate)){
+      setEndDate(newDate)
+    }
+  }
+
+  const handleEndDateChange = (date: Dayjs | null) => {
+    if(date === null){
+      date = dayjs().set("hours",0).set("minutes", 0).set("seconds", 0).set("milliseconds",0)
+    }
+    const newDate = date.set("hours",0).set("minutes", 0).set("seconds", 0).set("milliseconds",0)
+    setEndDate(newDate)
+    if(newDate.isBefore(startDate)){
+      setStartDate(newDate)
+    }
   }
 
   useEffect(() => {
@@ -83,7 +101,7 @@ const AbsencePage: FC<AbsencePageProps> = () => {
       getOptions()
       setIsLoading(false);
     }
-  }, [handleError, isLoading, options, reason]);
+  }, [handleError, isLoading, options]);
 
   if (isLoading) {
     return <Loading />;
@@ -109,73 +127,60 @@ const AbsencePage: FC<AbsencePageProps> = () => {
 
   return (
     <AppContextProvider value={{}}>
-
-      <Container key={UUID()}>
-        <Card key={UUID()}>
-          <CardContent key={UUID()} style={{border:"1", borderColor: "black", backgroundColor: "#242424"}}>
-          <Box key={UUID()} display={"grid"} gridTemplateColumns={"1fr 1fr"}>
-              <Typography style={{caretColor: "transparent"}} fontSize={"38px"} variant="subtitle1">
-                {common(`absence.title`)}
-              </Typography>
-          </Box>
-          <br></br>
-          <Box key={UUID()} display={"grid"} gridTemplateColumns={"1fr 1fr"}>
-              <Typography style={{caretColor: "transparent"}} fontSize={"22px"} variant="subtitle1">
-                {common(`absence.character`)}
-              </Typography>
-              <Select
-                value={selectedOption}
-                label="Character"
-                onChange={handleSelect}
-              >
-                <MenuItem disabled key={"DEFAULT"} value={"DEFAULT"}>Select a character...</MenuItem>
-                {options.map((option) => (
-                    <MenuItem key={UUID()} value={option}> {option} </MenuItem>
-                ))}
+      <Container key={UUID()} maxWidth={"xl"}>
+        <Logo></Logo>
+        <Box css={styles.modal}>
+          <h2>{common("absence.title")}</h2>
+          <Box css={styles.content}>
+            <Box display={"grid"} width={"100%"}>
+              <Select error={characterError} required css={{minWidth:"200px"}} value={selectedOption} label="Character" onChange={handleSelect} MenuProps={{ PaperProps: { sx: { maxHeight: 300 } } }}>
+                    <MenuItem disabled key={"DEFAULT"} value={"DEFAULT"}>Select a character...</MenuItem>
+                    {options.map((option) => (
+                        <MenuItem key={UUID()} value={option}> {option} </MenuItem>
+                    ))}
               </Select>
-          </Box>
-          <br></br>
-          <Box key={UUID()} display={"grid"} gridTemplateColumns={"1fr 1fr"}>
-              <Typography style={{caretColor: "transparent"}} fontSize={"22px"} variant="subtitle1">
-                {common(`absence.start`)}
-              </Typography>
-              <DatePicker selected={startDate} onChange={(date:Date) => setStartDate(date)} />
-          </Box>
-          <br></br>
-          <Box key={UUID()} display={"grid"} gridTemplateColumns={"1fr 1fr"}>
-              <Typography style={{caretColor: "transparent"}} fontSize={"22px"} variant="subtitle1">
-                {common(`absence.end`)}
-              </Typography>
-              <DatePicker selected={endDate} onChange={(date:Date) => setEndDate(date)} />
-          </Box>
-          <br></br>
-          <Box key={UUID()} display={"grid"} gridTemplateColumns={"1fr 1fr"}>
-              <Typography style={{caretColor: "transparent"}} fontSize={"22px"} variant="subtitle1">
-                {common(`absence.reason`)}
-              </Typography>
-              <TextInput
-                key={UUID()}
-                onChangeText ={handleInput}
-                defaultValue={reason}
-                placeholder={common("absence.reason")}
-                autoFocus
-              />
-          {error? <Typography style={{caretColor: "transparent", color: "red"}} fontSize={"22px"} variant="subtitle1">
+              {characterError? <Typography style={{caretColor: "transparent", color: "red"}} fontSize={"14px"} variant="subtitle1">
                 {common(`absence.error`)}
               </Typography> : <></>}
-
-          </Box>
-          <br></br>
-          <Box key={UUID()} display={"grid"} justifyContent={"center"}>
+            </Box>
+            <Box display={"grid"} width={"100%"}>
+              <br></br>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateTimePicker
+                  css={{zIndex: 0, background: "#1d1d1d"}}
+                  ampm={false}
+                  format="DD.MM.YYYY"
+                  label={common("absence.start")}
+                  value={startDate}
+                  onChange={handleStartDateChange}
+                  views={['year','month','day']}
+                  sx={{minWidth:"200px"}}
+                />
+              </LocalizationProvider>
+            </Box>
+            <Box display={"grid"} width={"100%"}>
+              <br></br>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateTimePicker
+                  css={{zIndex: 0, background: "#1d1d1d"}}
+                  ampm={false}
+                  format="DD.MM.YYYY"
+                  label={common("absence.end")}
+                  value={endDate}
+                  onChange={handleEndDateChange}
+                  views={['year','month','day']}
+                  sx={{minWidth:"200px"}}
+                />
+              </LocalizationProvider>
+            </Box>
+            <ReasonText reasonRef={reasonRef}></ReasonText>
             <Tooltip title={common("absence.send")} placement="top" arrow>
               <Button color="success" variant="contained" size="large" style={{height: '50px', width: '150px'}} onClick={() => handleSend()}>
                 <SendIcon />
               </Button>
             </Tooltip>
           </Box>
-          </CardContent>
-        </Card>
-
+        </Box>
       </Container>
     </AppContextProvider>
   );

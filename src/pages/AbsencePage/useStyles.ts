@@ -3,30 +3,33 @@ import useTheme, { Spacing } from "../../utils/useTheme";
 
 export default () => {
   const theme = useTheme();
+  const { palette, shadows, spacing } = theme;
 
   return {
-    gridBox: css`
-      margin: ${theme.spacing(Spacing.xs)} auto !important;
-    `,
-    header: css`
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: ${theme.spacing(Spacing.s)};
-      word-break: break-word;
-    `,
-    buttons: css`
-      display: flex;
-      width: min(550px, 100%);
-      justify-content: center;
-      gap: ${theme.spacing(Spacing.s)};
-      flex-wrap: wrap;
+    modal: css`
+      position: absolute;
+      margin-top: 3%;
+      width: min(800px, 90vw);
+      background-color: ${palette.background.paper};
+      border: 2px solid #000;
+      box-shadow: ${shadows[5]};
+      padding: ${spacing(2, 4, 3)};
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);9
+      border-radius: ${spacing(Spacing.xs)};
 
-      & > * {
-        width: 10em;
+      &:focus {
+        outline: none;
       }
     `,
-    buildTitle: css`
-      width: 100%;
+    content: css`
+      display: grid;
+      place-items: center;
+
+      & > * {
+        margin: ${spacing(Spacing.xxs)} 0;
+      }
     `
   };
 };
