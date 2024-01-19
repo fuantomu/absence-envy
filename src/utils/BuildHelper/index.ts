@@ -33,7 +33,7 @@ export abstract class BuildHelper {
     await RosterProvider.sendAbsence(JSON.stringify({absence: absence}))
   }
 
-  public static async parsePostAbsence(absence : Absence) {
+  public static async parsePostAbsence(absence : Absence, name: string) {
     const data = {
       "content": "",
       "embeds": [{
@@ -43,7 +43,7 @@ export abstract class BuildHelper {
         "fields": [
           {
             "name": "Charakter",
-            "value": absence.name,
+            "value": name,
             "inline": false
           },
           {

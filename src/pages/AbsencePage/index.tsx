@@ -28,22 +28,26 @@ const AbsencePage: FC<AbsencePageProps> = () => {
   const [startDate, setStartDate] = useState<Dayjs>(dayjs().set("hours",0).set("minutes", 0).set("seconds", 0).set("milliseconds",0));
   const [endDate, setEndDate] = useState<Dayjs>(dayjs().set("hours",0).set("minutes", 0).set("seconds", 0).set("milliseconds",0));
   const [sent, setSent] = useState(false);
+  const [players, setPlayers] = useState<BuildPlayer[]>([]);
   const [characterError, setCharacterError] = useState(false);
   const handleError = useErrorHandler();
   const reasonRef = useRef<any>()
 
   const getOptions = async () => {
     const buildObject : any[] = [];
+    const newPlayers: BuildPlayer[] = [];
     await BuildHelper.parseGetPlayers().then((newRoster : BuildPlayer[]) => {
       if(newRoster){
         for(const player of newRoster){
           if(player.main === player.name){
+            newPlayers.push(player)
             buildObject.push(player.name)
           }
         }
         setOptions(buildObject.sort((a,b) => a.localeCompare(b)))
       }
     })
+    setPlayers([...newPlayers])
     return buildObject
   }
 
@@ -61,10 +65,14 @@ const AbsencePage: FC<AbsencePageProps> = () => {
     const newStart = startDate.set("hours",0).set("minutes",0).set("seconds",0).set("milliseconds",0)
     const newEnd = endDate.set("hours",23).set("minutes",59).set("seconds",59).set("milliseconds",999)
     console.log(`Player ${selectedOption} is absent from ${newStart} to ${newEnd} with reason ${reasonRef.current?.value?? ""}`)
-    const absence = {name:selectedOption, startDate: newStart.unix()*1000, endDate: newEnd.unix()*1000, reason: reasonRef.current?.value?? ""}
-    BuildHelper.parseAbsenceSend(absence)
-    BuildHelper.parsePostAbsence(absence)
-    setSent(true)
+    const foundPlayer = players.find((player) => player.name === selectedOption)
+    if(foundPlayer){
+      const absence = {playerId:foundPlayer.id, startDate: newStart.unix()*1000, endDate: newEnd.unix()*1000, reason: reasonRef.current?.value?? ""}
+      BuildHelper.parseAbsenceSend(absence)
+      BuildHelper.parsePostAbsence(absence, selectedOption)
+      setSent(true)
+    }
+
   }
 
   const handleGoBack = () => {

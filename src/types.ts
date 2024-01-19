@@ -39,7 +39,7 @@ export type SelectOption = {
 };
 
 export type Absence = {
-  name : string,
+  playerId : string,
   startDate : number,
   endDate : number,
   reason : string
