@@ -18,19 +18,7 @@ export type BuildPlayer = {
   group?: string;
   oldName?: string;
   main?: string;
-};
-
-export type ConnectionString = {
-  server?: string;
-  port?: string;
-  database?: string;
-  uid?: string;
-  password?: string;
-  table?: string;
-  name?: string;
-  startDate?: number;
-  endDate?: number;
-  reason?: string;
+  alt?: string;
 };
 
 export type SelectOption = {
@@ -39,8 +27,8 @@ export type SelectOption = {
 };
 
 export type Absence = {
-  playerId : string,
-  startDate : number,
-  endDate : number,
+  player_id : string,
+  start_date : number,
+  end_date : number,
   reason : string
 }

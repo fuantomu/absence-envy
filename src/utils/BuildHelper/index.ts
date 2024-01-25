@@ -19,7 +19,8 @@ export abstract class BuildHelper {
             group: "roster",
             realm: undefined,
             oldName: player.name,
-            main: player.main?? ""
+            main: player.main?? "",
+            alt: player.alt?? ""
         })}
       } catch (error) {
         console.log(error)
@@ -48,12 +49,12 @@ export abstract class BuildHelper {
           },
           {
             "name": "Ich werde am / ab nicht verfügbar sein",
-            "value": new Date(absence.startDate).toLocaleString("de-de").split(",")[0],
+            "value": new Date(absence.start_date).toLocaleString("de-de").split(",")[0],
             "inline": false
           },
           {
             "name": "bis",
-            "value": new Date(absence.endDate).toLocaleString("de-de").split(",")[0],
+            "value": new Date(absence.end_date).toLocaleString("de-de").split(",")[0],
             "inline": false
           },
           {

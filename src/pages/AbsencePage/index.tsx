@@ -16,6 +16,7 @@ import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import ReasonText from "../ReasonText";
+import useWebSocket from "react-use-websocket";
 
 export interface AbsencePageProps {}
 
@@ -30,8 +31,15 @@ const AbsencePage: FC<AbsencePageProps> = () => {
   const [sent, setSent] = useState(false);
   const [players, setPlayers] = useState<BuildPlayer[]>([]);
   const [characterError, setCharacterError] = useState(false);
+  const [socketUrl,] = useState(process.env.REACT_APP_WEBSOCKET);
   const handleError = useErrorHandler();
   const reasonRef = useRef<any>()
+
+  const { sendMessage } = useWebSocket(socketUrl??"", { shouldReconnect: (closeEvent) => true,
+                                                        reconnectAttempts: 10,
+                                                        reconnectInterval: (attemptNumber) =>
+                                                        Math.min(Math.pow(2, attemptNumber) * 1000, 10000)
+                                                      })
 
   const getOptions = async () => {
     const buildObject : any[] = [];
@@ -61,15 +69,19 @@ const AbsencePage: FC<AbsencePageProps> = () => {
       setCharacterError(true)
       return
     }
+    if(!reasonRef.current?.value){
+      return
+    }
 
     const newStart = startDate.set("hours",0).set("minutes",0).set("seconds",0).set("milliseconds",0)
     const newEnd = endDate.set("hours",23).set("minutes",59).set("seconds",59).set("milliseconds",999)
     console.log(`Player ${selectedOption} is absent from ${newStart} to ${newEnd} with reason ${reasonRef.current?.value?? ""}`)
     const foundPlayer = players.find((player) => player.name === selectedOption)
     if(foundPlayer){
-      const absence = {playerId:foundPlayer.id, startDate: newStart.unix()*1000, endDate: newEnd.unix()*1000, reason: reasonRef.current?.value?? ""}
+      const absence = {player_id:foundPlayer.id, start_date: newStart.unix()*1000, end_date: newEnd.unix()*1000, reason: reasonRef.current?.value?? ""}
       BuildHelper.parseAbsenceSend(absence)
       BuildHelper.parsePostAbsence(absence, selectedOption)
+      sendMessage(JSON.stringify({messageType:"absence", data:absence}))
       setSent(true)
     }
 
