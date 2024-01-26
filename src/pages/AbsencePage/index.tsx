@@ -178,7 +178,7 @@ const AbsencePage: FC<AbsencePageProps> = () => {
             {common(`absence.sent`)}
           </Typography>
         </Box>
-        <Box display={"flex"} css={{ marginTop: "80%", justifyContent: "center" }}>
+        <Box display={"flex"} css={{ justifyContent: "center", marginTop: window.innerHeight / 2 }}>
           <Button
             color="primary"
             variant="contained"
