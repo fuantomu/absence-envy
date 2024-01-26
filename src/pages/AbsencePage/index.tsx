@@ -25,6 +25,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import ReasonText from "../ReasonText";
 import useWebSocket from "react-use-websocket";
+import updateLocale from "dayjs/plugin/updateLocale";
 
 export interface AbsencePageProps {}
 
@@ -46,6 +47,11 @@ const AbsencePage: FC<AbsencePageProps> = () => {
   const [socketUrl] = useState(process.env.REACT_APP_WEBSOCKET);
   const handleError = useErrorHandler();
   const reasonRef = useRef<any>();
+
+  dayjs.extend(updateLocale);
+  dayjs.updateLocale("en", {
+    weekStart: 1,
+  });
 
   const { sendMessage } = useWebSocket(socketUrl ?? "", {
     shouldReconnect: (closeEvent) => true,
