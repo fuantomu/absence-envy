@@ -1,21 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import Container from "@mui/material/Container";
-import { FC, ReactNode, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppContextProvider } from "../../components/App/context";
 import Loading from "../../components/Loading";
 import { BuildHelper } from "../../utils/BuildHelper";
 import useErrorHandler from "../../utils/useErrorHandler";
 import { BuildPlayer } from "../../types";
-import {
-  Box,
-  Button,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Autocomplete, Box, Button, TextField, Tooltip, Typography } from "@mui/material";
 import UUID from "../../utils/UUID";
 import SendIcon from "@mui/icons-material/Send";
 import Logo from "../Logo";
@@ -77,8 +69,11 @@ const AbsencePage: FC<AbsencePageProps> = () => {
     return buildObject;
   };
 
-  const handleSelect = (event: SelectChangeEvent<string>, child: ReactNode) => {
-    setSelectedOption(event.target.value);
+  const handleSelect = (event: any, newValue: string) => {
+    if (!newValue) {
+      return;
+    }
+    setSelectedOption(newValue);
     setCharacterError(false);
   };
 
@@ -202,25 +197,20 @@ const AbsencePage: FC<AbsencePageProps> = () => {
           <h2>{common("absence.title")}</h2>
           <Box css={styles.content}>
             <Box display={"grid"} width={"100%"}>
-              <Select
-                error={characterError}
-                required
-                css={{ minWidth: "200px" }}
-                value={selectedOption}
-                label="Character"
+              <Autocomplete
+                value={selectedOption === "DEFAULT" ? "" : selectedOption}
+                options={options}
                 onChange={handleSelect}
-                MenuProps={{ PaperProps: { sx: { maxHeight: 300 } } }}
-              >
-                <MenuItem disabled key={"DEFAULT"} value={"DEFAULT"}>
-                  Select a character...
-                </MenuItem>
-                {options.map((option) => (
-                  <MenuItem key={UUID()} value={option}>
-                    {" "}
-                    {option}{" "}
-                  </MenuItem>
-                ))}
-              </Select>
+                clearOnEscape
+                renderInput={(params) => (
+                  <TextField {...params} label={"Character"} variant="outlined" />
+                )}
+                sx={{
+                  backgroundColor: "#1d1d1d",
+                  border: "1px solid black",
+                  borderRadius: "5px",
+                }}
+              />
               {characterError ? (
                 <Typography
                   style={{ caretColor: "transparent", color: "red" }}
