@@ -40,7 +40,7 @@ export abstract class BuildHelper {
       embeds: [
         {
           description: "",
-          title: "Neue Abwesenheit erhalten",
+          title: `Neue Abwesenheit von ${name} erhalten`,
           color: null,
           fields: [
             {
