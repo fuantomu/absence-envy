@@ -22,6 +22,7 @@ export default () => {
       &:focus {
         outline: none;
       }
+
     `,
     content: css`
       display: grid;
@@ -30,6 +31,11 @@ export default () => {
       & > * {
         margin: ${spacing(Spacing.xxs)} 0;
       }
+    `,
+    datetime: css`
+      zIndex: 0;
+      border: 1px solid #000;
+      border-radius: ${spacing(Spacing.xs)};
     `
   };
 };

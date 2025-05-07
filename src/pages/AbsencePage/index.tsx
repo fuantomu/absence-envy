@@ -206,9 +206,12 @@ const AbsencePage: FC<AbsencePageProps> = () => {
                   <TextField {...params} label={"Character"} variant="outlined" />
                 )}
                 sx={{
-                  backgroundColor: "#1d1d1d",
-                  border: "1px solid black",
-                  borderRadius: "5px",
+                  "backgroundColor": "#1d1d1d",
+                  "border": "1px solid black",
+                  "borderRadius": "5px",
+                  "& .MuiIconButton-root": {
+                    color: "white",
+                  },
                 }}
               />
               {characterError ? (
@@ -227,14 +230,24 @@ const AbsencePage: FC<AbsencePageProps> = () => {
               <br></br>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
-                  css={{ zIndex: 0, background: "#1d1d1d" }}
+                  css={styles.datetime}
                   ampm={false}
                   format="DD.MM.YYYY"
                   label={common("absence.start")}
                   value={startDate}
                   onChange={handleStartDateChange}
                   views={["year", "month", "day"]}
-                  sx={{ minWidth: "200px" }}
+                  slotProps={{
+                    leftArrowIcon: { sx: { color: "white" } },
+                    rightArrowIcon: { sx: { color: "white" } },
+                    switchViewIcon: { sx: { color: "white" } },
+                  }}
+                  sx={{
+                    "minWidth": "200px",
+                    "& .MuiIconButton-root": {
+                      color: "white",
+                    },
+                  }}
                 />
               </LocalizationProvider>
             </Box>
@@ -242,14 +255,24 @@ const AbsencePage: FC<AbsencePageProps> = () => {
               <br></br>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
-                  css={{ zIndex: 0, background: "#1d1d1d" }}
+                  css={styles.datetime}
                   ampm={false}
                   format="DD.MM.YYYY"
                   label={common("absence.end")}
                   value={endDate}
                   onChange={handleEndDateChange}
                   views={["year", "month", "day"]}
-                  sx={{ minWidth: "200px" }}
+                  slotProps={{
+                    leftArrowIcon: { sx: { color: "white" } },
+                    rightArrowIcon: { sx: { color: "white" } },
+                    switchViewIcon: { sx: { color: "white" } },
+                  }}
+                  sx={{
+                    "minWidth": "200px",
+                    "& .MuiIconButton-root": {
+                      color: "white",
+                    },
+                  }}
                 />
               </LocalizationProvider>
             </Box>
